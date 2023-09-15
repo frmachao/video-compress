@@ -19,8 +19,8 @@ const instantiateFFmpeg = async (isMT) => {
     });
 
     const coreURL = isMT
-      ? "public/core-mt/package/dist/esm/ffmpeg-core.js"
-      : "public/core/package/dist/esm/ffmpeg-core.js";
+      ? "/public/core-mt/package/dist/esm/ffmpeg-core.js"
+      : "/public/core/package/dist/esm/ffmpeg-core.js";
 
     compressBar.style.width = "70%";
     compressBar.innerHTML = "正在加载 FFmpeg 核心依赖...";
