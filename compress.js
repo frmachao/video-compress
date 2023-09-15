@@ -1,5 +1,5 @@
-import { FFmpeg } from "/public/ffmpeg/package/dist/esm/index.js";
-import { fetchFile } from "/public/util/package/dist/esm/index.js";
+import { FFmpeg } from "./public/ffmpeg/package/dist/esm/index.js";
+import { fetchFile } from "./public/util/package/dist/esm/index.js";
 const ffmpegInstances = {};
 
 const instantiateFFmpeg = async (isMT) => {
