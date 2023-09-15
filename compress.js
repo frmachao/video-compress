@@ -3,9 +3,9 @@ import { fetchFile } from "./public/util/package/dist/esm/index.js";
 const ffmpegInstances = {};
 
 const instantiateFFmpeg = async (isMT) => {
-  const compressBar = document.getElementById("compress-task-bar");
-  compressBar.classList.add("progress-bar-animated");
   if (!ffmpegInstances[isMT]) {
+    const compressBar = document.getElementById("compress-task-bar");
+    compressBar.classList.add("progress-bar-animated");
     const ffmpegInstance = new FFmpeg();
     ffmpegInstance.on("log", ({ message }) => {
       console.log(message);
@@ -25,7 +25,8 @@ const instantiateFFmpeg = async (isMT) => {
     compressBar.style.width = "70%";
     compressBar.innerHTML = "正在加载 FFmpeg 核心依赖...";
     await ffmpegInstance.load({ coreURL });
-
+    compressBar.style.width = "100%";
+    compressBar.innerHTML = "FFmpeg 核心依赖完成";
     ffmpegInstances[isMT] = ffmpegInstance;
   }
   return ffmpegInstances[isMT];
