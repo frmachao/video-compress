@@ -136,6 +136,8 @@ function handleUploader(event) {
 
 // 下载视频
 async function downloadVideo() {
+  // 是否启用多线程
+  const isMT = document.getElementById("flexSwitchCheckChecked").checked;
   const ffmpegInstance = await instantiateFFmpeg(isMT);
   if (ffmpegInstance !== null) {
     const { files } = document.getElementById("uploader");
