@@ -1,3 +1,4 @@
+import { getFileNames, formatNames } from "./util.mjs";
 import { FFmpeg } from "./assets/ffmpeg/package/dist/esm/index.js";
 import { fetchFile } from "./assets/util/package/dist/esm/index.js";
 const ffmpegInstances = {};
@@ -22,7 +23,7 @@ const instantiateFFmpeg = async (isMT) => {
       ? "/assets/core-mt/package/dist/esm/ffmpeg-core.js"
       : "/assets/core/package/dist/esm/ffmpeg-core.js";
 
-    compressBar.style.width = "70%";
+    compressBar.style.width = "75%";
     compressBar.innerHTML = "正在加载 FFmpeg 核心依赖...";
     await ffmpegInstance.load({ coreURL });
     compressBar.style.width = "100%";
@@ -51,6 +52,7 @@ const compress = async () => {
   const isMT = document.getElementById("flexSwitchCheckChecked").checked;
   // 压缩率
   const compressConfig = getCompressConfig();
+  const outputTips = document.getElementById("output-tips");
   const compressButton = document.getElementById("compress-button");
   const downloadButton = document.getElementById("download-button");
   const compressBar = document.getElementById("compress-task-bar");
@@ -61,7 +63,7 @@ const compress = async () => {
   taskSpinner.hidden = null;
   const ffmpegInstance = await instantiateFFmpeg(isMT);
   const { name } = files[0];
-  const { outputName, extensionName } = formatNames(name);
+  const { outputName, fileExt } = formatNames(name);
   // fetchFile 获取数据的方法 ffmpegInstance.writeFile 函数将上传的文件写入FFmpeg的虚拟文件系统中
   await ffmpegInstance.writeFile(name, await fetchFile(files[0]));
   await ffmpegInstance.exec(["-i", name, "-s", compressConfig, outputName]);
@@ -71,10 +73,13 @@ const compress = async () => {
   const data = await ffmpegInstance.readFile(outputName);
   const video = document.getElementById("output-video");
   video.src = URL.createObjectURL(
-    new Blob([data.buffer], { type: `video/${extensionName}` })
+    new Blob([data.buffer], { type: `video/${fileExt}` })
   );
   taskSpinner.hidden = true;
+  // 展示压缩后的视频
   video.hidden = null;
+  // 展示视频提示
+  outputTips.hidden = null;
   // 展示下载按钮
   downloadButton.hidden = null;
 };
@@ -84,37 +89,15 @@ function verifyUpLoader(files) {
     alert("未选择文件!");
     return false;
   } else {
-    const file = files[0];
-    const allowedExtensions = [".mp4", ".ogg", ".webm"];
-    const fileExtension = getFileExtension(file.name);
-
-    if (!allowedExtensions.includes(fileExtension)) {
+    const { fileExt } = getFileNames(files[0].name);
+    if (!fileExt) {
       alert("非法文件类型!");
       return false;
     }
-    // if (file.size > 1024 * 1024 * 1024) {
-    //   console.error("文件大小超过 1GB!");
-    //   return false;
-    // }
     return true;
   }
 }
 
-function getFileExtension(fileName) {
-  const lastDotIndex = fileName.lastIndexOf(".");
-  if (lastDotIndex === -1 || lastDotIndex === 0) {
-    // 未找到点或点出现在文件名的开头，没有有效的扩展名
-    return "";
-  }
-  const fileExt = fileName.slice(lastDotIndex + 1).toLowerCase();
-  return fileExt;
-}
-
-function formatNames(name) {
-  const outputName = `output-${name}`;
-  const extensionName = getFileExtension(name);
-  return { outputName, extensionName };
-}
 function handleUploader(event) {
   const files = event.target.files;
   const isVerify = verifyUpLoader(files);
@@ -142,15 +125,15 @@ async function downloadVideo() {
   if (ffmpegInstance !== null) {
     const { files } = document.getElementById("uploader");
     const { name } = files[0];
-    const { outputName, extensionName } = formatNames(name);
+    const { outputName, fileExt } = formatNames(name);
     const outputData = await ffmpegInstance.readFile(outputName);
     const blob = new Blob([outputData.buffer], {
-      type: `video/${extensionName}`,
+      type: `video/${fileExt}`,
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = outputName;
+    a.download = name;
     a.click();
     // 调用 URL.revokeObjectURL(url) 来释放创建的 URL 对象
     URL.revokeObjectURL(url);
