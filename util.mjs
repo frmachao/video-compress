@@ -14,4 +14,19 @@ function formatNames(name = "") {
   const outputName = `output-${name}`;
   return { outputName, fileExt, fileName };
 }
-export { getFileNames, formatNames };
+
+function verifyUpLoader(files) {
+  if (!files || files.length === 0) {
+    alert("未选择文件!");
+    return false;
+  } else {
+    const { fileExt } = getFileNames(files[0].name);
+    if (!fileExt) {
+      alert("非法文件类型!");
+      return false;
+    }
+    return true;
+  }
+}
+
+export { getFileNames, formatNames, verifyUpLoader };

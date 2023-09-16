@@ -1,4 +1,4 @@
-import { getFileNames, formatNames } from "./util.mjs";
+import {verifyUpLoader, formatNames } from "./util.mjs";
 import { FFmpeg } from "./assets/ffmpeg/package/dist/esm/index.js";
 import { fetchFile } from "./assets/util/package/dist/esm/index.js";
 const ffmpegInstances = {};
@@ -83,20 +83,6 @@ const compress = async () => {
   // 展示下载按钮
   downloadButton.hidden = null;
 };
-
-function verifyUpLoader(files) {
-  if (!files || files.length === 0) {
-    alert("未选择文件!");
-    return false;
-  } else {
-    const { fileExt } = getFileNames(files[0].name);
-    if (!fileExt) {
-      alert("非法文件类型!");
-      return false;
-    }
-    return true;
-  }
-}
 
 function handleUploader(event) {
   const files = event.target.files;
