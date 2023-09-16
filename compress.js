@@ -1,5 +1,5 @@
-import { FFmpeg } from "./public/ffmpeg/package/dist/esm/index.js";
-import { fetchFile } from "./public/util/package/dist/esm/index.js";
+import { FFmpeg } from "./assets/ffmpeg/package/dist/esm/index.js";
+import { fetchFile } from "./assets/util/package/dist/esm/index.js";
 const ffmpegInstances = {};
 
 const instantiateFFmpeg = async (isMT) => {
@@ -19,8 +19,8 @@ const instantiateFFmpeg = async (isMT) => {
     });
 
     const coreURL = isMT
-      ? "/public/core-mt/package/dist/esm/ffmpeg-core.js"
-      : "/public/core/package/dist/esm/ffmpeg-core.js";
+      ? "/assets/core-mt/package/dist/esm/ffmpeg-core.js"
+      : "/assets/core/package/dist/esm/ffmpeg-core.js";
 
     compressBar.style.width = "70%";
     compressBar.innerHTML = "正在加载 FFmpeg 核心依赖...";
@@ -86,9 +86,7 @@ function verifyUpLoader(files) {
   } else {
     const file = files[0];
     const allowedExtensions = [".mp4", ".ogg", ".webm"];
-    const fileExtension = file.name
-      .substring(file.name.lastIndexOf("."))
-      .toLowerCase();
+    const fileExtension = getFileExtension(file.name);
 
     if (!allowedExtensions.includes(fileExtension)) {
       alert("非法文件类型!");
@@ -102,16 +100,17 @@ function verifyUpLoader(files) {
   }
 }
 
+function getFileExtension(fileName) {
+  const lastDotIndex = fileName.lastIndexOf(".");
+  if (lastDotIndex === -1 || lastDotIndex === 0) {
+    // 未找到点或点出现在文件名的开头，没有有效的扩展名
+    return "";
+  }
+  const fileExt = fileName.slice(lastDotIndex + 1).toLowerCase();
+  return fileExt;
+}
+
 function formatNames(name) {
-  const getFileExtension = (fileName) => {
-    const lastDotIndex = fileName.lastIndexOf(".");
-    if (lastDotIndex === -1 || lastDotIndex === 0) {
-      // 未找到点或点出现在文件名的开头，没有有效的扩展名
-      return "";
-    }
-    const fileExt = fileName.slice(lastDotIndex + 1).toLowerCase();
-    return fileExt;
-  };
   const outputName = `output-${name}`;
   const extensionName = getFileExtension(name);
   return { outputName, extensionName };
