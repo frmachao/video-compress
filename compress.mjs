@@ -119,7 +119,7 @@ async function downloadVideo() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = name;
+    a.download = outputName;
     a.click();
     // 调用 URL.revokeObjectURL(url) 来释放创建的 URL 对象
     URL.revokeObjectURL(url);
